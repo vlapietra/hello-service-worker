@@ -24,13 +24,22 @@ async function installServiceWorker() {
 }
 
 
-self.addEventListener('activate', event => {
-    log("ACTIVATING");
-    const activationCompleted = Promise.resolve()
-        .then((activationCompleted) => log("ACTIVATED"));
 
-    event.waitUntil(activationCompleted);
-});
+self.addEventListener('activate', () => activateSW());
+
+async function activateSW() {
+
+    log('Service Worker activated');
+
+    const cacheKeys = await caches.keys();
+
+    cacheKeys.forEach(cacheKey => {
+        if (cacheKey !== getCacheName() ) {
+            caches.delete(cacheKey);
+        }
+    });
+}
+
 
 // handling service worker installation
 self.addEventListener('fetch', event => {
